@@ -20,6 +20,8 @@ import org.mmtk.vm.VM;
 
 import org.vmmagic.pragma.*;
 
+import java.lang.*;
+
 /**
  * This abstract class implements <i>per-collector thread</i>
  * behavior and state for <i>generational copying collectors</i>.<p>
@@ -85,6 +87,8 @@ import org.vmmagic.pragma.*;
   @NoInline
   public void collectionPhase(short phaseId, boolean primary) {
 
+    long curtime = System.nanoTime();
+
     if (phaseId == Gen.PREPARE) {
       los.prepare(true);
       global().arrayRemsetPool.prepareNonBlocking();
@@ -127,6 +131,10 @@ import org.vmmagic.pragma.*;
     }
 
     super.collectionPhase(phaseId, primary);
+
+   System.out.println("One collection time is " + (System.nanoTime() - curtime));
+//    VM.sysWrite("System.nanoTime() - curtime"); 
+
   }
 
   /****************************************************************************
