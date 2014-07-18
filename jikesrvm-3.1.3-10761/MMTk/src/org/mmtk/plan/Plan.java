@@ -141,6 +141,7 @@ public abstract class Plan implements Constants {
   public static final int LARGE_CODE = USE_CODE_SPACE ? largeCodeSpace.getDescriptor() : 0;
 
   /** Timer that counts total time */
+  // this is the example of Timer and Log, for future reference
   public static final Timer totalTime = new Timer("time");
 
   /** Support for allocation-site identification */
