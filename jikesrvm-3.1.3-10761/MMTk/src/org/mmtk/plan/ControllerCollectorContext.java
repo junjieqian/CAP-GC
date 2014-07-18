@@ -100,6 +100,9 @@ public class ControllerCollectorContext extends CollectorContext {
       workers.waitForCycle();
       if (Options.verbose.getValue() >= 5) Log.writeln("[STWController: Worker threads complete!]");
 
+      // here implements the GC time calculation
+      // question is this is total GC workers time, not individual time
+
       // Heap growth logic
       long elapsedTime = VM.statistics.nanoTime() - startTime;
       HeapGrowthManager.recordGCTime(VM.statistics.nanosToMillis(elapsedTime));
