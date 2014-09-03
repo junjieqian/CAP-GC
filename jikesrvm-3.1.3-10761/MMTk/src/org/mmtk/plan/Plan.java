@@ -252,6 +252,7 @@ public abstract class Plan implements Constants {
   }
 
   /**
+   * GC thread number determined here, Junjie
    * Determines the number of threads that will be used for collection.<p>
    *
    * Collectors that need fine-grained control over the number of spawned collector
