@@ -95,6 +95,7 @@ public final class CollectorLocal implements Constants {
   }
 
   /**
+   * Sweep function, move objects? -Junjie
    * Finish up after a collection.
    *
    * We help sweeping all the blocks in parallel.
