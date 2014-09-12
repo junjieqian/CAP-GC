@@ -748,6 +748,8 @@ public final class ImmixSpace extends Space implements Constants {
   /****************************************************************************
    *
    * Locks
+   * 
+   * Count how many locks used in GC, Junjie Qian
    */
 
   /**
