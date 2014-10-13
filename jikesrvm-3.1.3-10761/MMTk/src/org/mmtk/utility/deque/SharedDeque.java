@@ -45,6 +45,8 @@ public class SharedDeque extends Deque implements Constants {
    */
 
   /**
+   * Junjie, this should be the place where objects(roots) placed in queue for GC
+   * 
    * Constructor
    */
   public SharedDeque(String name, RawPageSpace rps, int arity) {
