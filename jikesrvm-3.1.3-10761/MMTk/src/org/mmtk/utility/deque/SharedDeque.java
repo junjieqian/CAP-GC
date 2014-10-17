@@ -57,6 +57,17 @@ public class SharedDeque extends Deque implements Constants {
     tail = TAIL_INITIAL_VALUE;
   }
 
+  public SharedDeque (String name, RawPageSpace rps, int arity, boolean collection) {
+    this.rps = rps;
+	this.arity = arity;
+	this.name = name;
+	lock = VM.newLock("SharedDeque");
+	clearCompletionFlag();
+	head = HEAD_INITIAL_VALUE;
+	tail = HEAD_INITIAL_VALUE;
+	this.collection = collection;
+  }
+
   /** Get the arity (words per entry) of this queue */
   @Inline
   final int getArity() { return arity; }
@@ -157,7 +168,11 @@ public class SharedDeque extends Deque implements Constants {
    * @param consumers # threads taking part.
    */
   private void prepare(int consumers) {
-    if (VM.VERIFY_ASSERTIONS) VM.assertions._assert(numConsumersWaiting == 0);
+    //if (VM.VERIFY_ASSERTIONS) VM.assertions._assert(numConsumersWaiting == 0);
+	if (collection) {
+      Log.write(numConsumers);
+      Log.writeln(" waiting");
+	}
     setNumConsumers(consumers);
     clearCompletionFlag();
   }
@@ -199,6 +214,9 @@ public class SharedDeque extends Deque implements Constants {
    *
    * Private instance methods and fields
    */
+
+  /** it is in collection */
+  private boolean collection = false;
 
   /** The name of this shared deque - for diagnostics */
   private final String name;

@@ -27,6 +27,11 @@ import org.vmmagic.pragma.Unpreemptible;
 import org.vmmagic.unboxed.Word;
 import org.vmmagic.unboxed.Offset;
 
+import org.jikesrvm.runtime.SysCall;
+import static org.jikesrvm.runtime.SysCall.sysCall;
+
+import org.mmtk.policy.immix.ImmixSpace; 
+
 /**
  Lock provides RVM support for monitors and Java level
  synchronization.
@@ -123,7 +128,8 @@ public final class Lock implements Constants {
   /** do debug tracing? */
   protected static final boolean trace = false;
   /** Control the gathering of statistics */
-  public static final boolean STATS = false;
+  // lock prifuling, junjie
+  public static final boolean STATS = true;
 
   /** The (fixed) number of entries in the lock table spine */
   protected static final int LOCK_SPINE_SIZE = 128;
@@ -173,6 +179,8 @@ public final class Lock implements Constants {
   public static int lockOperations;
   /** Number of unlock operations */
   public static int unlockOperations;
+  /** Number of lock operations in gc*/
+  public static int gclockOperations;
   /** Number of deflations */
   public static int deflations;
 
@@ -207,6 +215,8 @@ public final class Lock implements Constants {
     mutex = new SpinLock();
     entering = new ThreadQueue();
     waiting = new ThreadQueue();
+//	sysCall.sysSetupHardwareTrapHandler();
+//	VM.sysWriteln(sysCall.sysGetThreadId());
   }
 
   /**
@@ -235,6 +245,7 @@ public final class Lock implements Constants {
       return false;
     }
     if (STATS) lockOperations++;
+	if (ImmixSpace.inCollection) gclockOperations++;
     RVMThread me = RVMThread.getCurrentThread();
     int threadId = me.getLockingId();
     if (ownerId == threadId) {
@@ -694,6 +705,7 @@ public final class Lock implements Constants {
     public void notifyAppRunStart(String app, int value) {
       lockOperations = 0;
       unlockOperations = 0;
+	  gclockOperations = 0;
       deflations = 0;
 
       ThinLock.notifyAppRunStart("", 0);
@@ -711,8 +723,8 @@ public final class Lock implements Constants {
       RVMThread.dumpStats();
       VM.sysWrite(" notifyAll operations\n");
       VM.sysWrite("FatLocks: ");
-      VM.sysWrite(lockOperations);
-      VM.sysWrite(" locks");
+      VM.sysWrite(gclockOperations);
+      VM.sysWrite(" gclocks");
       Services.percentage(lockOperations, totalLocks, "all lock operations");
       VM.sysWrite("FatLocks: ");
       VM.sysWrite(unlockOperations);

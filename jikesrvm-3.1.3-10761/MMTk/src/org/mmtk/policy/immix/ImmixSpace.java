@@ -65,7 +65,7 @@ public final class ImmixSpace extends Space implements Constants {
   private byte markState = ObjectHeader.MARK_BASE_VALUE;
           byte lineMarkState = RESET_LINE_MARK_STATE;
   private byte lineUnavailState = RESET_LINE_MARK_STATE;
-  private boolean inCollection;
+  public static boolean inCollection;
   private int linesConsumed = 0;
 
   private Lock mutatorLock = VM.newLock(getName()+"mutator");
@@ -757,8 +757,10 @@ public final class ImmixSpace extends Space implements Constants {
    * GC or mutator.
    */
   private void lock() {
-    if (inCollection)
+    if (inCollection) {
+	  Log.writeln("1");
       gcLock.acquire();
+	}
     else
       mutatorLock.acquire();
   }

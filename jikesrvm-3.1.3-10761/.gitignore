@@ -24,6 +24,11 @@ testing/tests/jni/cp
 testing/tests/jni/out.*
 testing/tests/SPECjbb2000/results
 
+dist
+components
+generated
+target
+
 syntax:regexp
 ^components
 ^dist

@@ -103,9 +103,12 @@ public class ParallelCollectorGroup implements Constants {
 
   /**
    * Wake up the parked threads in this group.
+   *
+   * Triggered each time the GC happens, Junjie
    */
   public void triggerCycle() {
     lock.lock();
+    //Log.writeln("gc lock");
     triggerCount++;
     contextsParked = 0;
     lock.broadcast();

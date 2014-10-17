@@ -20,7 +20,9 @@ import org.mmtk.vm.VM;
 
 import org.vmmagic.pragma.*;
 
-import java.lang.*;
+import org.mmtk.utility.Log;
+
+//import java.lang.*;
 
 /**
  * This abstract class implements <i>per-collector thread</i>
@@ -87,7 +89,7 @@ import java.lang.*;
   @NoInline
   public void collectionPhase(short phaseId, boolean primary) {
 
-    long curtime = System.nanoTime();
+//    long curtime = System.nanoTime();
 
     if (phaseId == Gen.PREPARE) {
       los.prepare(true);
@@ -132,8 +134,7 @@ import java.lang.*;
 
     super.collectionPhase(phaseId, primary);
 
-   System.out.println("One collection time is " + (System.nanoTime() - curtime));
-//    VM.sysWrite("System.nanoTime() - curtime"); 
+//    Log.write("System.nanoTime() - curtime"); 
 
   }
 

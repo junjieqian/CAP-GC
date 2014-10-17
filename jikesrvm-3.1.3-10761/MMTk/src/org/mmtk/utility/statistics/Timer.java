@@ -137,6 +137,7 @@ public class Timer extends LongCounter {
     Log.write(VM.statistics.nanosToSecs(value));
   }
 
+
   /**
    * Get the current value of the timer in milliseconds
    */

@@ -34,8 +34,8 @@ public class Trace implements Constants {
    * Constructor
    */
   public Trace(RawPageSpace metaDataSpace) {
-    valuePool = new SharedDeque("valuePool",metaDataSpace, 1);
-    rootLocationPool = new SharedDeque("rootLocations", metaDataSpace, 1);
+    valuePool = new SharedDeque("valuePool",metaDataSpace, 1, true);
+    rootLocationPool = new SharedDeque("rootLocations", metaDataSpace, 1, true);
   }
 
   /**

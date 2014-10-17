@@ -22,6 +22,9 @@ import org.mmtk.utility.heap.VMRequest;
 import org.vmmagic.pragma.*;
 import org.vmmagic.unboxed.*;
 
+import org.mmtk.utility.Log;
+import org.mmtk.utility.statistics.Timer;
+
 /**
  * This class implements the functionality of a two-generation copying
  * collector where <b>the higher generation is an immix space</b>.
@@ -84,11 +87,17 @@ public class GenImmix extends Gen {
   @Inline
   @Override
   public final void collectionPhase(short phaseId) {
+    Timer starttime = new Timer("phases");
+    starttime.start();
+
     if (phaseId == SET_COLLECTION_KIND) {
       super.collectionPhase(phaseId);
       if (gcFullHeap) {
         immixSpace.decideWhetherToDefrag(emergencyCollection, true, collectionAttempt, userTriggeredCollection);
       }
+	  Log.write("Set collection kind: ");
+      starttime.printTotalSecs();
+	  Log.writeln();
       return;
     }
 
@@ -97,11 +106,17 @@ public class GenImmix extends Gen {
         super.collectionPhase(phaseId);
         matureTrace.prepare();
         immixSpace.prepare(true);
+		Log.write("Prepare: ");
+        starttime.printTotalSecs();
+        Log.writeln();
         return;
       }
 
       if (phaseId == CLOSURE) {
         matureTrace.prepare();
+        Log.write("Closure: ");
+        starttime.printTotalSecs();
+        Log.writeln();
         return;
       }
 
@@ -109,12 +124,18 @@ public class GenImmix extends Gen {
         matureTrace.release();
         lastGCWasDefrag = immixSpace.release(true);
         super.collectionPhase(phaseId);
+        Log.write("Release: ");
+        starttime.printTotalSecs();
+        Log.writeln();
         return;
       }
     } else
       lastGCWasDefrag = false;
 
     super.collectionPhase(phaseId);
+    Log.write("Collection: ");
+    starttime.printTotalSecs();
+    Log.writeln();
   }
 
   @Override

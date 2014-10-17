@@ -23,6 +23,8 @@ import org.mmtk.vm.VM;
 import org.vmmagic.pragma.*;
 import org.vmmagic.unboxed.*;
 
+import org.mmtk.utility.statistics.Timer;
+
 /**
  * This abstract class and its global counterpart implement the core
  * functionality for a transitive closure over the heap graph. This class
@@ -43,6 +45,9 @@ public abstract class TraceLocal extends TransitiveClosure implements Constants 
   protected final ObjectReferenceDeque values;
   /** delayed root slots */
   protected final AddressDeque rootLocations;
+
+  // timer, junjie
+  private static Timer gctime = new Timer("gc", true);
 
   /****************************************************************************
    *
@@ -66,6 +71,7 @@ public abstract class TraceLocal extends TransitiveClosure implements Constants 
    */
   public TraceLocal(int specializedScan, Trace trace) {
     super(specializedScan);
+//	gctime.start();
     values = new ObjectReferenceDeque("value", trace.valuePool);
     rootLocations = new AddressDeque("roots", trace.rootLocationPool);
   }
@@ -498,6 +504,9 @@ public abstract class TraceLocal extends TransitiveClosure implements Constants 
       processRememberedSets();
     } while (!values.isEmpty());
     assertMutatorRemsetsFlushed();
+//	Log.prependThreadId();
+//	gctime.printTotalSecs();
+//	Log.writeln("secs");
   }
 
   /**

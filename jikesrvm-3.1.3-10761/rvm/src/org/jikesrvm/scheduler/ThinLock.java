@@ -24,6 +24,8 @@ import org.vmmagic.pragma.Unpreemptible;
 import org.vmmagic.unboxed.Offset;
 import org.vmmagic.unboxed.Word;
 
+import org.mmtk.policy.immix.ImmixSpace;
+
 /**
  * Implementation of thin locks.
  */
@@ -80,7 +82,13 @@ public final class ThinLock implements ThinLockConstants {
   @NoNullCheck
   @Unpreemptible
   public static void lock(Object o, Offset lockOffset) {
-    if (STATS) fastLocks++;
+    if (STATS) {
+		fastLocks++;
+		if (ImmixSpace.inCollection) gcfastlocks++;
+//		VM.sysWrite("Lock: ");
+//		VM.sysWriteln(ImmixSpace.inCollection);
+		if (ImmixSpace.inCollection) VM.sysWriteln("Lock: true");
+	}
 
     Word threadId = Word.fromIntZeroExtend(RVMThread.getCurrentThread().getLockingId());
 
@@ -154,7 +162,10 @@ public final class ThinLock implements ThinLockConstants {
       }
 
       if (tryToInflate) {
-        if (STATS) slowLocks++;
+        if (STATS) {
+			slowLocks++;
+			if (ImmixSpace.inCollection) gcslowlocks++;
+		}
         // the lock is not fat, is owned by someone else, or else the count wrapped.
         // attempt to inflate it (this may fail, in which case we'll just harmlessly
         // loop around) and lock it (may also fail, if we get the wrong lock).  if it
@@ -593,22 +604,29 @@ public final class ThinLock implements ThinLockConstants {
 
   static int fastLocks;
   static int slowLocks;
+  static int gcfastlocks;
+  static int gcslowlocks;
 
+  // is that ok to count "inCollection" lock usage?
   static void notifyAppRunStart(String app, int value) {
     if (!STATS) return;
     fastLocks = 0;
     slowLocks = 0;
+	gcfastlocks = 0;
+	gcslowlocks = 0;
   }
 
   static void notifyExit(int value) {
     if (!STATS) return;
     VM.sysWrite("ThinLocks: ");
-    VM.sysWrite(fastLocks);
-    VM.sysWrite(" fast locks");
+//    VM.sysWrite(fastLocks);
+    VM.sysWrite(gcfastlocks);
+	VM.sysWrite(" fast locks");
     Services.percentage(fastLocks, value, "all lock operations");
     VM.sysWrite("ThinLocks: ");
-    VM.sysWrite(slowLocks);
-    VM.sysWrite(" slow locks");
+//    VM.sysWrite(slowLocks);
+    VM.sysWrite(gcslowlocks);
+	VM.sysWrite(" slow locks");
     Services.percentage(slowLocks, value, "all lock operations");
   }
 
